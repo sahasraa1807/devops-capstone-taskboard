@@ -1,0 +1,44 @@
+# ====================================================================
+# Troubleshooting Scenario 1: Broken Image Tag (ImagePullBackOff)
+# ====================================================================
+# Objective:
+# Apply this manifest and observe the pod fail into ImagePullBackOff.
+#
+# Investigation:
+#   1. kubectl get pods -n taskboard
+#   2. kubectl describe pod <broken-pod-name> -n taskboard
+#   3. kubectl get events -n taskboard --sort-by=.lastTimestamp
+#
+# Root Cause:
+#   Image repository or tag "non-existent-tag-v999" does not exist in registry.
+#
+# Fix:
+#   Update image to a valid tag, e.g. "latest" or valid git commit SHA.
+# ====================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskboard-backend-broken-image
+  namespace: taskboard
+  labels:
+    app.kubernetes.io/name: taskboard
+    app.kubernetes.io/component: backend-broken
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: taskboard
+      app.kubernetes.io/component: backend-broken
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: taskboard
+        app.kubernetes.io/component: backend-broken
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/devops-lead/taskboard-backend:non-existent-tag-v999
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000

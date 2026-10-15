@@ -1,0 +1,39 @@
+# ====================================================================
+# Troubleshooting Scenario 2: Service Selector Mismatch (Empty Endpoints)
+# ====================================================================
+# Objective:
+# Apply this manifest and observe that the Service receives no traffic.
+#
+# Investigation:
+#   1. kubectl get svc taskboard-backend-broken-svc -n taskboard
+#   2. kubectl get endpoints taskboard-backend-broken-svc -n taskboard
+#      (Notice: ENDPOINTS is <none>!)
+#   3. kubectl get pods -n taskboard --show-labels
+#      (Notice: Pod label is "app.kubernetes.io/component=backend", but
+#       service selector is looking for "component=wrong-unmatched-backend")
+#
+# Root Cause:
+#   A Service routes traffic to Pods via label selectors. When labels
+#   do not match, Kubernetes creates no Endpoints, and all traffic drops.
+#
+# Fix:
+#   Change selector from "component: wrong-unmatched-backend" to
+#   "app.kubernetes.io/component: backend".
+# ====================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskboard-backend-broken-svc
+  namespace: taskboard
+  labels:
+    app.kubernetes.io/name: taskboard
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app.kubernetes.io/name: taskboard
+    app.kubernetes.io/component: wrong-unmatched-backend  # <-- BUG: Label does not match existing pods!
