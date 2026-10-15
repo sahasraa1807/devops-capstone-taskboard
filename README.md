@@ -362,18 +362,3 @@ kubectl get hpa -n taskboard -w
 
 ---
 
-## 5. Submission Checklist Verification (100 / 100 Points)
-
-| Module | Criteria | Status |
-| :--- | :--- | :---: |
-| **M1** | FastAPI backend with `/health`, `/ready`, `/metrics`, CRUD APIs, Alembic migration, React UI | **10 / 10** |
-| **M2** | Pytest passing 11/11 tests, in-memory SQLite isolation, `conftest.py`, `pytest.ini` | **10 / 10** |
-| **M3** | Clean Git `.gitignore` (no secrets, no node_modules, no .venv), atomic commits | **5 / 5** |
-| **M4** | Multi-stage frontend Dockerfile, non-root user in both images, working `docker compose` | **10 / 10** |
-| **M5** | GitHub Actions CI/CD with Pytest gate, frontend build, SHA-tagged images pushed to GHCR | **15 / 15** |
-| **M6** | DevSecOps Trivy container vulnerability scan on both images for HIGH & CRITICAL CVEs | **5 / 5** |
-| **M7** | Terraform AWS VPC (2 public, 2 private subnets, NAT) + EKS cluster, `tfvars.example` | **15 / 15** |
-| **M8** | Kubernetes namespace, Helm chart, 2+ replicas, ClusterIP services, Ingress `/` & `/api` | **15 / 15** |
-| **M9** | Prometheus `/metrics`, `ServiceMonitor`, Grafana values & dashboard JSON | **10 / 10** |
-| **M10** | Comprehensive documentation, live demo steps, and troubleshooting exercises | **5 / 5** |
-| **TOTAL** | **Full Capstone Project Evaluation** | **100 / 100** |
