@@ -366,6 +366,9 @@ kubectl get hpa -n taskboard -w
 
 ### 1. Pytest Automated Quality Gate (11/11 Passed)
 Automated tests executed against in-memory SQLite database before Docker image promotion:
+
+![Pytest Test Suite Output](docs/screenshots/01_pytest_tests.png)
+
 ```text
 PS C:\Users\sahas\Desktop\devops-final\backend> python -m pytest -v
 ================== test session starts ==================
@@ -392,6 +395,9 @@ tests/test_api.py::test_task_stats PASSED                                [100%]
 
 ### 2. Multi-Container Stack Build (`docker compose up --build`)
 Containerized deployment of PostgreSQL 16 database, non-root FastAPI backend, and multi-stage Nginx frontend:
+
+![Docker Compose Build Output](docs/screenshots/02_docker_compose.png)
+
 ```text
 [+] up 20/20 resolving provenance for metadata file
   ✓ Image postgres:16-alpine Pulled                                       28.4s
@@ -411,11 +417,17 @@ taskboard-backend  | INFO: Application startup complete.
 ```
 
 ### 3. Running Web Application UI (`http://localhost:3000`)
-- **Status:** Active & Responding
+Active React SaaS dashboard with real-time status and telemetry:
+
+![TaskBoard Web Application UI](docs/screenshots/03_taskboard_ui.png)
+
 - **UI Architecture:** Dark SaaS Theme, KPI Summary Cards (Total Tasks, In Progress, Under Review, Completed, High Priority), Status Filters, Assignee Tags, Interactive Sprint Creation Modal, and DevOps GitOps Pipeline Status Indicator.
 
 ### 4. FastAPI Swagger Interactive API Documentation (`http://localhost:8000/docs`)
 Exposes and documents all REST APIs and Kubernetes health probes:
+
+![FastAPI Swagger Documentation](docs/screenshots/04_fastapi_swagger.png)
+
 - `GET /metrics` — Prometheus machine-readable metrics
 - `GET /` — API root service status
 - `GET /health` — Liveness probe (HTTP 200 OK)
@@ -428,6 +440,10 @@ Exposes and documents all REST APIs and Kubernetes health probes:
 - `DELETE /api/tasks/{task_id}` — Delete task
 
 ### 5. Prometheus Observability Metrics Endpoint (`curl http://localhost:8000/metrics`)
+Direct metrics scrape verification:
+
+![Prometheus Metrics Endpoint Output](docs/screenshots/05_prometheus_metrics.png)
+
 ```text
 StatusCode        : 200
 StatusDescription : OK
