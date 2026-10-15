@@ -1,0 +1,9 @@
+apiVersion: v2
+name: taskboard
+description: Cloud-native TaskBoard Helm chart for Kubernetes with HPA and Prometheus
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: DevOps Lead
+    email: devops@taskboard.local

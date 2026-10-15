@@ -1,0 +1,114 @@
+# Default values for TaskBoard Helm Chart
+
+global:
+  environment: production
+
+# ------------------------------------------
+# Backend Service Configuration
+# ------------------------------------------
+backend:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/devops-lead/taskboard-backend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  livenessProbe:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  readinessProbe:
+    path: /ready
+    initialDelaySeconds: 15
+    periodSeconds: 10
+
+# ------------------------------------------
+# Frontend Service Configuration
+# ------------------------------------------
+frontend:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/devops-lead/taskboard-frontend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  livenessProbe:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+# ------------------------------------------
+# PostgreSQL In-Cluster Database
+# ------------------------------------------
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  service:
+    port: 5432
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: ""
+  auth:
+    database: taskboard
+    username: taskboard
+    password: taskboard-secure-password
+
+# ------------------------------------------
+# Ingress Controller Configuration
+# ------------------------------------------
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: taskboard.local
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: backend
+        - path: /
+          pathType: Prefix
+          service: frontend
+
+# ------------------------------------------
+# Horizontal Pod Autoscaler (HPA)
+# ------------------------------------------
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+# ------------------------------------------
+# Observability / Monitoring (Prometheus)
+# ------------------------------------------
+serviceMonitor:
+  enabled: true
+  interval: 15s
+  scrapeTimeout: 10s
+  path: /metrics
