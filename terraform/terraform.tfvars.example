@@ -1,0 +1,19 @@
+# ==========================================
+# TaskBoard Terraform Variables Example
+# Copy this file to terraform.tfvars to customize.
+# DO NOT COMMIT ACTUAL SECRETS OR AWS KEYS!
+# ==========================================
+
+aws_region          = "ap-south-1"
+environment         = "production"
+cluster_name        = "taskboard-eks"
+vpc_cidr            = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+availability_zones  = ["ap-south-1a", "ap-south-1b"]
+
+# Worker node group configuration
+node_instance_types = ["t3.medium"]
+node_desired_size   = 2
+node_min_size       = 1
+node_max_size       = 4
