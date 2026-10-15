@@ -28,8 +28,9 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Support running as unprivileged non-root user
-RUN touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid \
+RUN sed -i 's,/run/nginx.pid,/tmp/nginx.pid,g' /etc/nginx/nginx.conf && \
+    touch /tmp/nginx.pid && \
+    chown -R nginx:nginx /tmp/nginx.pid \
                          /var/cache/nginx \
                          /var/log/nginx \
                          /usr/share/nginx/html \
