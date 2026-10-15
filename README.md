@@ -1,6 +1,6 @@
 # TaskBoard — DevOps Final Capstone Project (Python)
 
-[![CI/CD Pipeline](https://github.com/your-username/session21-devops-capstone-final/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/session21-devops-capstone-final/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/sahasraa1807/devops-final/actions/workflows/ci.yml/badge.svg)](https://github.com/sahasraa1807/devops-final/actions/workflows/ci.yml)
 [![Docker](https://img.shields.io/badge/Docker-Multi--stage-blue.svg)](https://www.docker.com/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-EKS%201.30-326ce5.svg)](https://kubernetes.io/)
 [![Helm](https://img.shields.io/badge/Helm-v3-0f1689.svg)](https://helm.sh/)
