@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskBoard DevOps Capstone Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151d2f;
+      --border: #23304a;
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --accent: #10b981;
+      --accent-orange: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Presentation Header */
+    .pres-header {
+      padding: 1.25rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 15, 25, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      color: white;
+      font-size: 0.85rem;
+    }
+
+    .slide-indicator {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Slide Deck Container */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 3rem 4rem;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.35s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Typography */
+    .slide-tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary-light);
+      margin-bottom: 0.75rem;
+    }
+
+    .slide-title {
+      font-size: 2.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .slide-title span {
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p, .card ul {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .card ul {
+      list-style-position: inside;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .card ul li strong {
+      color: #e2e8f0;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-blue { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+    /* Footer & Controls */
+    .pres-footer {
+      padding: 1rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      background: rgba(11, 15, 25, 0.95);
+    }
+
+    .footer-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn:hover {
+      background: var(--border);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="pres-header">
+    <div class="brand">
+      <span class="brand-badge">CAPSTONE</span>
+      <span>TaskBoard — DevOps Production Delivery</span>
+    </div>
+    <div class="slide-indicator" id="slideIndicator">SLIDE 1 / 4</div>
+  </header>
+
+  <!-- Slide Deck Container -->
+  <main class="deck-container">
+
+    <!-- ==================== SLIDE 1 ==================== -->
+    <section class="slide active" id="slide1">
+      <div class="slide-tag">Session 21 Capstone Project</div>
+      <h1 class="slide-title">TaskBoard: <span>Cloud-Native Delivery</span> from Laptop to AWS Kubernetes</h1>
+      
+      <div class="grid-2">
+        <div class="card" style="border-left: 4px solid var(--primary);">
+          <h3>🎯 Project Objective</h3>
+          <p>
+            Build, containerize, automate, and monitor a production-grade SaaS project management application across the complete DevOps lifecycle.
+          </p>
+          <ul>
+            <li><strong>From Code to Cloud:</strong> Seamless transition from local developer machine to AWS EKS.</li>
+            <li><strong>Quality & Security First:</strong> Enforce automated unit testing and Trivy vulnerability scans before image promotion.</li>
+            <li><strong>GitOps Automation:</strong> Fully automated CI/CD pipeline using GitHub Actions & GHCR.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <h3>⚡ Full DevOps Technology Stack</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+            <div><span class="badge-pill badge-blue">Frontend</span> React 18, Vite, CSS</div>
+            <div><span class="badge-pill badge-blue">Backend</span> Python 3.11, FastAPI</div>
+            <div><span class="badge-pill badge-blue">Database</span> PostgreSQL 16, Alembic</div>
+            <div><span class="badge-pill badge-blue">Testing</span> Pytest (11 passed)</div>
+            <div><span class="badge-pill badge-green">CI/CD</span> GitHub Actions, GHCR</div>
+            <div><span class="badge-pill badge-green">Security</span> Trivy CVE Scanner</div>
+            <div><span class="badge-pill badge-green">IaC</span> Terraform (AWS VPC + EKS)</div>
+            <div><span class="badge-pill badge-green">K8s & Observability</span> Helm, Prometheus, Grafana</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 2 ==================== -->
+    <section class="slide" id="slide2">
+      <div class="slide-tag">Application Architecture & Containerization</div>
+      <h1 class="slide-title">Full-Stack Application, <span>Automated Testing</span> & Docker</h1>
+      
+      <div class="grid-3">
+        <div class="card">
+          <h3>💻 3-Tier Application</h3>
+          <ul>
+            <li><strong>React + Vite UI:</strong> SaaS dashboard with real-time KPI cards, task board, modal creation, and status filters.</li>
+            <li><strong>FastAPI Backend:</strong> High-performance async REST API with 10 endpoints.</li>
+            <li><strong>Probes:</strong> <code>/health</code> (Liveness) & <code>/ready</code> (DB active query check).</li>
+            <li><strong>PostgreSQL 16:</strong> Managed by Alembic schema migrations.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>🧪 Pytest Quality Gate</h3>
+          <ul>
+            <li><strong>11 Automated Test Cases:</strong> Testing CRUD operations, error handling, stats, and probes.</li>
+            <li><strong>Database Isolation:</strong> In-memory SQLite fixtures (<code>conftest.py</code>) ensure zero impact on production data.</li>
+            <li><strong>Quality Gate:</strong> Broken code fails locally and in CI, blocking broken image promotion.</li>
+          </ul>
+          <span class="badge-pill badge-green" style="margin-top: auto;">11 Passed in 0.73s</span>
+        </div>
+
+        <div class="card">
+          <h3>🐳 Docker Best Practices</h3>
+          <ul>
+            <li><strong>Backend Dockerfile:</strong> Python 3.11-slim executing as non-root user <code>appuser</code> (UID 10001).</li>
+            <li><strong>Multi-Stage Frontend:</strong> Node 22 build stage compiles static bundle; unprivileged Nginx serves it on port 8080.</li>
+            <li><strong>Docker Compose:</strong> Single command <code>docker compose up --build</code> starts full stack with healthchecks.</li>
+          </ul>
+          <span class="badge-pill badge-blue" style="margin-top: auto;">Multi-Stage Non-Root</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 3 ==================== -->
+    <section class="slide" id="slide3">
+      <div class="slide-tag">Continuous Delivery & DevSecOps</div>
+      <h1 class="slide-title">Automated <span>GitHub Actions</span> CI/CD & Security Scanning</h1>
+      
+      <div class="grid-4">
+        <div class="card">
+          <span class="badge-pill badge-blue">Stage 1</span>
+          <h3>Test & Lint</h3>
+          <ul>
+            <li>Checks out code.</li>
+            <li>Sets up Python 3.11 & Node 22.</li>
+            <li>Executes <code>pytest -v</code>.</li>
+            <li>Builds React bundle via Vite.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="badge-pill badge-blue">Stage 2</span>
+          <h3>Docker Build</h3>
+          <ul>
+            <li>Builds backend container.</li>
+            <li>Builds frontend container.</li>
+            <li>Applies Docker Buildx optimization.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="badge-pill badge-green">Stage 3</span>
+          <h3>Trivy Scan</h3>
+          <ul>
+            <li>DevSecOps security gate.</li>
+            <li>Scans images for <code>HIGH</code> & <code>CRITICAL</code> CVEs.</li>
+            <li>Passes cleanly (0 vulnerabilities).</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="badge-pill badge-green">Stage 4</span>
+          <h3>GHCR Push</h3>
+          <ul>
+            <li>Authenticates to GHCR.</li>
+            <li>Tags images with <strong>Git commit SHA</strong> (traceability).</li>
+            <li>Publishes container packages.</li>
+            <li>Runs <code>helm lint</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div><strong>Live CI/CD Verification:</strong> Run #38689503766 completed with 100% green checks across all jobs.</div>
+        <span class="badge-pill badge-green">All Checks Passing ✔</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4 ==================== -->
+    <section class="slide" id="slide4">
+      <div class="slide-tag">Infrastructure, Kubernetes & Monitoring</div>
+      <h1 class="slide-title">Terraform AWS EKS, <span>Helm Packaging</span> & Observability</h1>
+      
+      <div class="grid-3">
+        <div class="card">
+          <h3>☁️ Terraform AWS (IaC)</h3>
+          <ul>
+            <li><strong>Region:</strong> <code>ap-south-1</code> (Mumbai).</li>
+            <li><strong>VPC:</strong> 10.0.0.0/16 with 2 Public & 2 Private subnets across 2 AZs.</li>
+            <li><strong>Gateways:</strong> Internet Gateway + NAT Gateway for secure egress.</li>
+            <li><strong>AWS EKS 1.30:</strong> Managed control plane + EC2 Worker Node Group (<code>t3.medium</code>).</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>📦 Kubernetes & Helm</h3>
+          <ul>
+            <li><strong>Helm Chart:</strong> <code>helm/taskboard/</code> modular templates.</li>
+            <li><strong>High Availability:</strong> 2 replicas each for frontend & backend.</li>
+            <li><strong>Nginx Ingress:</strong> Unified routing (<code>/</code> to frontend, <code>/api</code> to backend).</li>
+            <li><strong>Storage:</strong> PostgreSQL with 2Gi PVC.</li>
+            <li><strong>HPA:</strong> Autoscaling 2 → 5 pods when CPU exceeds 70%.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>📊 Observability & Labs</h3>
+          <ul>
+            <li><strong>Prometheus:</strong> Scrapes <code>/metrics</code> via ServiceMonitor every 15s.</li>
+            <li><strong>Grafana:</strong> Live dashboard tracking HTTP rate, p95 latency, and CPU load.</li>
+            <li><strong>Troubleshooting Labs:</strong> Simulation of <code>ImagePullBackOff</code> and Service selector mismatch.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Presentation Footer & Slide Controls -->
+  <footer class="pres-footer">
+    <div class="footer-note">Press <strong>Right Arrow (→)</strong> / <strong>Space</strong> for Next, <strong>Left Arrow (←)</strong> for Previous</div>
+    <div class="controls">
+      <button class="btn" id="prevBtn" onclick="prevSlide()">◀ Previous</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextSlide()">Next ▶</button>
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 4;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach((slide, index) => {
+        slide.classList.remove('active');
+        if (index === n - 1) {
+          slide.classList.add('active');
+        }
+      });
+      document.getElementById('slideIndicator').textContent = `SLIDE ${n} / ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = (n === 1);
+      document.getElementById('nextBtn').textContent = (n === totalSlides) ? 'Finish 🏁' : 'Next ▶';
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    showSlide(currentSlide);
+  </script>
+</body>
+</html>
