@@ -362,3 +362,88 @@ kubectl get hpa -n taskboard -w
 
 ---
 
+## 5. Verification Outputs & Screenshots Evidence
+
+### 1. Pytest Automated Quality Gate (11/11 Passed)
+Automated tests executed against in-memory SQLite database before Docker image promotion:
+```text
+PS C:\Users\sahas\Desktop\devops-final\backend> python -m pytest -v
+================== test session starts ==================
+platform win32 -- Python 3.11.9, pytest-8.4.2, pluggy-1.6.0 -- python.exe
+rootdir: C:\Users\sahas\Desktop\devops-final\backend
+configfile: pytest.ini
+testpaths: tests
+collected 11 items
+
+tests/test_api.py::test_root_endpoint PASSED                             [  9%]
+tests/test_api.py::test_health_endpoint PASSED                           [ 18%]
+tests/test_api.py::test_ready_endpoint PASSED                            [ 27%]
+tests/test_api.py::test_metrics_endpoint PASSED                          [ 36%]
+tests/test_api.py::test_create_task PASSED                               [ 45%]
+tests/test_api.py::test_get_tasks_list PASSED                            [ 54%]
+tests/test_api.py::test_get_task_by_id PASSED                            [ 63%]
+tests/test_api.py::test_task_not_found PASSED                            [ 72%]
+tests/test_api.py::test_update_task PASSED                               [ 81%]
+tests/test_api.py::test_delete_task PASSED                               [ 90%]
+tests/test_api.py::test_task_stats PASSED                                [100%]
+
+================== 11 passed in 0.73s ==================
+```
+
+### 2. Multi-Container Stack Build (`docker compose up --build`)
+Containerized deployment of PostgreSQL 16 database, non-root FastAPI backend, and multi-stage Nginx frontend:
+```text
+[+] up 20/20 resolving provenance for metadata file
+  ✓ Image postgres:16-alpine Pulled                                       28.4s
+  ✓ Image devops-final-backend Built                                      54.9s
+  ✓ Image devops-final-frontend Built                                     54.9s
+  ✓ Network devops-final_taskboard-net Created                             0.1s
+  ✓ Volume devops-final_postgres_data Created                              0.0s
+  ✓ Container taskboard-postgres Created                                   0.3s
+  ✓ Container taskboard-backend Created                                    0.2s
+  ✓ Container taskboard-frontend Created                                   0.2s
+Attaching to taskboard-backend, taskboard-frontend, taskboard-postgres
+taskboard-postgres | The database cluster will be initialized with locale "en_US.utf8".
+taskboard-backend  | ==> Running database migrations...
+taskboard-backend  | INFO [alembic.runtime.migration] Running upgrade -> 001_initial_tasks
+taskboard-backend  | ==> Starting TaskBoard FastAPI server...
+taskboard-backend  | INFO: Application startup complete.
+```
+
+### 3. Running Web Application UI (`http://localhost:3000`)
+- **Status:** Active & Responding
+- **UI Architecture:** Dark SaaS Theme, KPI Summary Cards (Total Tasks, In Progress, Under Review, Completed, High Priority), Status Filters, Assignee Tags, Interactive Sprint Creation Modal, and DevOps GitOps Pipeline Status Indicator.
+
+### 4. FastAPI Swagger Interactive API Documentation (`http://localhost:8000/docs`)
+Exposes and documents all REST APIs and Kubernetes health probes:
+- `GET /metrics` — Prometheus machine-readable metrics
+- `GET /` — API root service status
+- `GET /health` — Liveness probe (HTTP 200 OK)
+- `GET /ready` — Readiness probe (database connectivity check)
+- `GET /api/tasks/stats` — Dashboard statistics
+- `GET /api/tasks` — List tasks with filters
+- `POST /api/tasks` — Create task
+- `GET /api/tasks/{task_id}` — Get task by ID
+- `PUT /api/tasks/{task_id}` — Update task
+- `DELETE /api/tasks/{task_id}` — Delete task
+
+### 5. Prometheus Observability Metrics Endpoint (`curl http://localhost:8000/metrics`)
+```text
+StatusCode        : 200
+StatusDescription : OK
+Content           : # HELP python_gc_objects_collected_total Objects collected during gc
+                    # TYPE python_gc_objects_collected_total counter
+                    python_gc_objects_collected_total{generation="0"} 760.0
+                    ...
+RawContentLength  : 10996
+```
+
+### 6. GitHub Actions CI/CD Pipeline & GHCR Packages
+- **Pipeline Run:** [GitHub Actions Run #38689503766 (Status: SUCCESS)](https://github.com/sahasraa1807/devops-final/actions/runs/38689503766)
+- **All Stages Green:**
+  1. `Run Pytest & Frontend Build` — Passed (11/11 tests)
+  2. `Docker Build, Trivy Security Scan & GHCR Push` — Passed (CRITICAL/HIGH: 0)
+  3. `Helm Lint & Validate` — Passed (0 errors)
+- **Published GHCR Packages:**
+  - `ghcr.io/sahasraa1807/taskboard-backend` (tagged with Git commit SHA and latest)
+  - `ghcr.io/sahasraa1807/taskboard-frontend` (tagged with Git commit SHA and latest)
